@@ -38,10 +38,12 @@ jobs:
             xcrun simctl launch --terminate-running-process "$DEV" com.barak.lumohop -AppleLanguages "($L)" -AppleLocale "$L" -best 95
             shoot 5 "$L-1-menu"
             # 2 and 3: gameplay mid-run, 4: game over
-            xcrun simctl launch --terminate-running-process "$DEV" com.barak.lumohop -AppleLanguages "($L)" -AppleLocale "$L" -best 95 -skin 2 -demoScore 60
+            xcrun simctl launch --terminate-running-process "$DEV" com.barak.lumohop -AppleLanguages "($L)" -AppleLocale "$L" -best 95 -skin 2 -demoScore 99999
             shoot 9 "$L-2-play"
-            shoot 7 "$L-3-play"
-            shoot 22 "$L-4-over"
+            shoot 8 "$L-3-play"
+            # 4: a short run that ends, for the game-over card
+            xcrun simctl launch --terminate-running-process "$DEV" com.barak.lumohop -AppleLanguages "($L)" -AppleLocale "$L" -best 95 -skin 2 -demoScore 40
+            shoot 32 "$L-4-over"
           done
           ls -la shots
       - uses: actions/upload-artifact@v4

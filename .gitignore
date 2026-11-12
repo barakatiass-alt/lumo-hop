@@ -4,3 +4,4 @@ DerivedData/
 .DS_Store
 node_modules/
 *.p8
+store/shots/
