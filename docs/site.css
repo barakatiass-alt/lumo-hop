@@ -1,0 +1,20 @@
+:root{--night:#0b1030;--card:#141a46;--ink:#fff3d6;--dim:rgba(255,243,214,.68);--ember:#ffb347;--jade:#6ff5c8;color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{margin:0;min-height:100vh;color:var(--ink);font:17px/1.6 'Rubik','Segoe UI',system-ui,-apple-system,sans-serif;
+  background:radial-gradient(ellipse at 50% -10%,#3a1f6e 0,transparent 60%),linear-gradient(#0b1030,#140c34 70%,#3a1a3e);
+  padding:48px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px))}
+main{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.brand img{width:64px;height:64px;border-radius:15px;box-shadow:0 0 28px rgba(255,179,71,.45)}
+.brand b{font-size:26px;font-weight:900;letter-spacing:-.01em}
+h1{margin:0;font-size:clamp(34px,7vw,52px);line-height:1.05;font-weight:900;text-wrap:balance;text-shadow:0 0 30px rgba(255,179,71,.5)}
+h2{margin:0;font-size:21px;color:var(--ember)}
+p,li{margin:0;color:var(--dim)}
+section{display:flex;flex-direction:column;gap:10px}
+ul{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px}
+a{color:var(--jade)}
+.cta{align-self:flex-start;background:var(--ember);color:#2a1300;font-weight:800;text-decoration:none;border-radius:999px;padding:13px 26px}
+.card{background:var(--card);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.lang{border-top:1px solid rgba(255,243,214,.15);padding-top:28px}
+footer{font-size:14px;color:var(--dim);display:flex;gap:16px;flex-wrap:wrap}

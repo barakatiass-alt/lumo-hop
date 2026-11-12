@@ -1,0 +1,51 @@
+name: Store screenshots
+# Runs the app in the largest iPhone simulator and saves App Store screenshots (English and Hebrew).
+# Starts only from the Actions tab or by pushing a tag that starts with "screens-".
+on:
+  workflow_dispatch: {}
+  push:
+    tags: ["screens-*"]
+
+jobs:
+  screens:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Build for the simulator
+        run: |
+          set -o pipefail
+          brew install xcodegen
+          cd ios && xcodegen generate
+          xcodebuild -project LumoHop.xcodeproj -scheme LumoHop -sdk iphonesimulator -configuration Release \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/dd" CODE_SIGNING_ALLOWED=NO build | tail -n 40
+      - name: Take screenshots
+        run: |
+          set -e
+          APP="$RUNNER_TEMP/dd/Build/Products/Release-iphonesimulator/LumoHop.app"
+          DEV=$(xcrun simctl list devices available | grep -E "iPhone [0-9]+ Pro Max" | tail -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+          echo "Device: $(xcrun simctl list devices available | grep $DEV)"
+          xcrun simctl boot "$DEV"; xcrun simctl bootstatus "$DEV" -b
+          xcrun simctl status_bar "$DEV" override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 || true
+          xcrun simctl install "$DEV" "$APP"
+          mkdir -p shots
+          shoot() { sleep "$1"; xcrun simctl io "$DEV" screenshot "shots/$2.png"; }
+          for L in en he; do
+            # 1: menu with a few colors unlocked
+            xcrun simctl launch --terminate-running-process "$DEV" com.barak.lumohop -AppleLanguages "($L)" -AppleLocale "$L" -best 95
+            shoot 5 "$L-1-menu"
+            # 2 and 3: gameplay mid-run, 4: game over
+            xcrun simctl launch --terminate-running-process "$DEV" com.barak.lumohop -AppleLanguages "($L)" -AppleLocale "$L" -best 95 -skin 2 -demoScore 60
+            shoot 9 "$L-2-play"
+            shoot 7 "$L-3-play"
+            shoot 22 "$L-4-over"
+          done
+          ls -la shots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-screenshots
+          path: shots
+          retention-days: 14

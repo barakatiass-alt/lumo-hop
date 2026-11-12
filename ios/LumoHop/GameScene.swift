@@ -197,8 +197,22 @@ final class GameScene: SKScene {
         if core.phase == .dead && core.deadT < 0.5 { dt *= 0.45 }
         core.update(dt)
         handleEvents()
+        demoStep()
         if core.phase == .dead && core.deadT > 0.95 && !reportedOver { reportedOver = true; model?.showGameOver() }
         render()
+    }
+
+    /// Store screenshots only: launched with "-demoScore N", a bot plays until the score reaches N, then waits and loses.
+    static let demoTarget = UserDefaults.standard.integer(forKey: "demoScore")
+    private var demoStarted = false
+    private func demoStep() {
+        guard GameScene.demoTarget > 0 else { return }
+        if !demoStarted && core.t > 1.2 { demoStarted = true; model?.start() }
+        guard core.phase == .play, core.mode == .orbit, core.score < GameScene.demoTarget,
+              let next = core.lanterns.first(where: { $0.idx == core.cur.idx + 1 }) else { return }
+        let dx = core.dir * -sin(core.angle), dy = core.dir * cos(core.angle)
+        let rx = next.x - core.px, ry = next.y - core.py
+        if rx * dx + ry * dy > 0 && abs(rx * dy - ry * dx) < next.r * 0.5 { core.tap(); handleEvents() }
     }
 
     /// Logical world point to scene point.
